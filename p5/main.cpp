@@ -24,6 +24,33 @@ bool is_factor( unsigned int uiCandidate, unsigned int uiLargeNum )
 }
 
 /**
+ * Primality test.
+ *
+ * @param[in]	iCandidate	Potential prime.
+ *
+ * @returns		true if iCandidate is prime, false otherwise.
+ */
+bool is_prime( unsigned int uiCandidate )
+{
+	int i = 2;
+
+	if ( 2 > uiCandidate )
+		return false;
+
+	if ( 2 == uiCandidate )
+		return true;
+
+	while ( ( i * i ) <= uiCandidate )
+	{
+		if ( ( uiCandidate % i ) == 0 )
+			return false;
+		i++;
+	}
+
+	return true;
+}
+
+/**
  * Gets the smallest prime factor of a given integer.
  *
  * @param[in]	uiNum	The number to factorise.
@@ -34,7 +61,7 @@ unsigned int smallest_prime_factor( unsigned int uiNum )
 {
 	int n = 6;
 
-	// First test 2 and 3
+	// First test 2 and 3 as we know they are prime
 	if ( is_factor( 2, uiNum ) )
 		return 2;
 
@@ -45,10 +72,12 @@ unsigned int smallest_prime_factor( unsigned int uiNum )
 	while ( n-1 <= uiNum )
 	{
 		if ( is_factor( n - 1, uiNum ) )
-			return n - 1;
+			if ( is_prime (  n - 1 ) )
+				return n - 1;
 
 		if ( is_factor( n + 1, uiNum ) )
-			return n + 1;
+			if ( is_prime (  n + 1 ) )
+				return n + 1;
 
 		n += 6;
 	}
