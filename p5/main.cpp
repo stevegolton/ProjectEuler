@@ -5,31 +5,49 @@
 
 using namespace std;
 
-#define TEST_NUMBER ( 20 )
-
-bool is_factor( uint64_t qwCandidate, uint64_t qwLargeNum )
+/**
+ * Tests whether a number is a factor of another number.
+ *
+ * @param[in]	uiCandiate	Potential factor.
+ * @param[in]	uiLargeNum	Number to test against.
+ *
+ * @returns		true if factor, false otherwise
+ */
+bool is_factor( unsigned int uiCandidate, unsigned int uiLargeNum )
 {
-	if ( qwCandidate == 0 ) return false;
+	// Don't divide by 0
+	if ( uiCandidate == 0 )
+		return false;
 
-	return ( ( qwLargeNum % qwCandidate ) == 0 );
+	// Check remainder from divide
+	return ( ( uiLargeNum % uiCandidate ) == 0 );
 }
 
-int smallest_prime_factor( uint64_t iNum )
+/**
+ * Gets the smallest prime factor of a given integer.
+ *
+ * @param[in]	uiNum	The number to factorise.
+ *
+ * @returns		Smallest prime factor of uiNum.
+ */
+unsigned int smallest_prime_factor( unsigned int uiNum )
 {
-	uint64_t n = 6;
+	int n = 6;
 
-	if ( is_factor( 2, iNum ) )
+	// First test 2 and 3
+	if ( is_factor( 2, uiNum ) )
 		return 2;
 
-	if ( is_factor( 3, iNum ) )
+	if ( is_factor( 3, uiNum ) )
 		return 3;
 
-	while ( n-1 <= iNum )
+	// Test all numbers in the sequence 6n +- 1
+	while ( n-1 <= uiNum )
 	{
-		if ( is_factor( n - 1, iNum ) )
+		if ( is_factor( n - 1, uiNum ) )
 			return n - 1;
 
-		if ( is_factor( n + 1, iNum ) )
+		if ( is_factor( n + 1, uiNum ) )
 			return n + 1;
 
 		n += 6;
@@ -38,59 +56,84 @@ int smallest_prime_factor( uint64_t iNum )
 	return 0;
 }
 
+/**
+ * Entry point.
+ */
 int main( int argc, char**argv )
 {
-	int *a;
-	int *b;
+	int *aiLocal;
+	int *aiMaster;
 	int iCandidate;
 	int iFactor;
-	uint64_t multiple = 1;
+	uint64_t qwResult = 1;
 	int iInput;
 	int iBufLen;
+	bool bFirst = true;
 
+	// Check args
 	if ( argc < 2 )
 	{
 		cout << "Usage: " << argv[0] << " <number>" << endl;
 		return 1;
 	}
 
+	// Get test number from input arg[1]
 	iInput = atoi( argv[1] );
 	iBufLen = iInput + 1;
 
-	a = (int*)malloc( iBufLen * sizeof( int ) );
-	b = (int*)malloc( iBufLen * sizeof( int ) );
+	// Allocate memory for
+	aiMaster = new int[iBufLen];
+	aiLocal = new int[iBufLen];
 
-	if ( NULL == a || NULL == b  )
+	if ( NULL == aiMaster || NULL == aiLocal  )
 	{
+		cout << "Memory allocation error" << endl;
 		return 1;
 	}
 
 	// Clear b in preparation
-	memset( b, 0, iBufLen * sizeof( int ) );
+	memset( aiMaster, 0, iBufLen * sizeof( int ) );
 
+	// Run through all the numbers from iInput down to 2
 	while( iInput >= 2 )
 	{
-		cout << "Testing " << iInput << endl;
+		// Copy iInput and keep factorising until we reach 1.
 		iCandidate = iInput;
-		memset( a, 0, iBufLen * sizeof( int ) );
+
+		memset( aiLocal, 0, iBufLen * sizeof( int ) );
 
 		while( ( iFactor = smallest_prime_factor( iCandidate ) ) )
 		{
 			iCandidate /= iFactor;
-			a[iFactor]++;
+			aiLocal[iFactor]++;
 
-			if ( b[iFactor] < a[iFactor] )
+			// Increment our master array b
+			if ( aiMaster[iFactor] < aiLocal[iFactor] )
 			{
-				multiple *= iFactor;
-				b[iFactor]++;
+				// Work out the final result here
+				qwResult *= iFactor;
+				aiMaster[iFactor]++;
+
+				// Print the factors as we multiply them
+				if ( bFirst )
+				{
+					bFirst = false;
+					cout << iFactor;
+				}
+				else
+				{
+					cout << " * " << iFactor;
+				}
 			}
 		}
 
 		iInput--;
 	}
 
-	free( a );
-	free( b );
+	// Mr clean
+	delete( aiMaster );
+	delete( aiLocal );
 
-	cout << multiple << endl;
+	// Print result
+	cout << " = " << qwResult << endl;
 }
