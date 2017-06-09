@@ -30,9 +30,8 @@ int main(void)
 			while(*cur1)
 			{
 				// Check we don't have a duplicate character in here
-				if((*cur1 == *cur2) || (*cur1 > '9') || (*cur2 > '9'))
+				if(*cur1 == *cur2)
 				{
-					//printf("%c %c\n", *cur1, *cur2);
 					dup = 1;
 					goto end;
 				}
