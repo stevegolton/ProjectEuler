@@ -26,27 +26,8 @@ int calc_value(char *name)
  */
 int compare(const void *a, const void *b)
 {
-	char *name_a = *(char**)a;
-	char *name_b = *(char**)b;
-
-	// Walk through both strings until at least one of them ends
-	while(*name_a && *name_b)
-	{
-		// If the characters differ, return the difference between them
-		if(*name_a != *name_b)
-			return *name_a - *name_b;
-
-		// Move the pointer on through the strings
-		name_a++;
-		name_b++;
-	}
-
-	// If we have ended one string, see which one still has characters remaining
-	if(*name_a) return +1;
-	if(*name_b) return -1;
-
-	// If we have got here the strings are exactly identical
-	return 0;
+	// Strcmp works just fine for this (after dereferencing our pointers)
+	return strcmp(*(char**)a, *(char**)b);
 }
 
 /**
@@ -58,7 +39,7 @@ int main(void)
 	char name[100] = {'\0', };		// Temporary buffer for holding names
 	char **names = NULL;			// List of names
 	int size = 0;					// Number of elements in the list of names
-	int total = 0;					// Total problem count
+	int total = 0;					// Total value count
 
 	// Try to open the file
 	f=fopen("names.txt", "r");
